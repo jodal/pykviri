@@ -3,6 +3,9 @@
 from pprint import pformat
 
 class Kviri(object):
+    ASC=False
+    DESC=True
+
     def __init__(self, name):
         self._unused_name = None
         self.bindings = [{}]
@@ -57,8 +60,7 @@ class Kviri(object):
         return self
 
     def orderBy(self, *orderings):
-        # FIXME Support ordering by multiple columns
-        for (o, reverse) in orderings:
+        for (o, reverse) in reversed(orderings):
             self.bindings.sort(key=lambda b: b[o], reverse=reverse)
         return self
 
@@ -123,10 +125,16 @@ if __name__ == '__main__':
 
     print 'FROM x IN L ORDER BY x ASC SELECT x'
     print Kviri('x').inSource(L
-        ).orderBy(('x', False)
+        ).orderBy(('x', Kviri.ASC)
         ).select('x')
 
     print 'FROM x IN L ORDER BY x DESC SELECT x'
     print Kviri('x').inSource(L
-        ).orderBy(('x', True)
+        ).orderBy(('x', Kviri.DESC)
         ).select('x')
+
+    print 'FROM x IN L FROM y in M ORDER BY x DESC, y DESC SELECT x, y'
+    print Kviri('x').inSource(L
+        ).andFrom('y').inSource(M
+        ).orderBy(('x', Kviri.DESC), ('y', Kviri.DESC)
+        ).select('x', 'y')

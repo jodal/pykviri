@@ -138,3 +138,15 @@ if __name__ == '__main__':
         ).andFrom('y').inSource(M
         ).orderBy(('x', Kviri.DESC), ('y', Kviri.DESC)
         ).select('x', 'y')
+
+    print 'FROM x IN L FROM y in M ORDER BY x DESC, y ASC SELECT x, y'
+    print Kviri('x').inSource(L
+        ).andFrom('y').inSource(M
+        ).orderBy(('x', Kviri.DESC), ('y', Kviri.ASC)
+        ).select('x', 'y')
+
+    print 'FROM x IN L FROM y in M ORDER BY x ASC, y DESC SELECT x, y'
+    print Kviri('x').inSource(L
+        ).andFrom('y').inSource(M
+        ).orderBy(('x', Kviri.ASC), ('y', Kviri.DESC)
+        ).select('x', 'y')

@@ -8,7 +8,13 @@ class Kviri(object):
         self._unused_name = None
         self.bindings = [{}]
         self.results = None
-        self.andFrom(name)
+        self.fromName(name)
+
+    def __repr__(self):
+        return self.results
+
+    def __str__(self):
+        return pformat(self.results)
 
     def _set_name(self, name):
         assert self._unused_name is None
@@ -20,7 +26,7 @@ class Kviri(object):
         assert name is not None
         return name
 
-    def andFrom(self, name):
+    def fromName(self, name):
         self._set_name(name)
         return self
 
@@ -73,9 +79,3 @@ class Kviri(object):
                     result.append((selector, binding[selector]))
             self.results.append(dict(result))
         return self
-
-    def __repr__(self):
-        return self.results
-
-    def __str__(self):
-        return pformat(self.results)

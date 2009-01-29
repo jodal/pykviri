@@ -123,6 +123,13 @@ if __name__ == '__main__':
         ).select('x', 'z',
             lambda **names: names['x'] * names['z'])
 
+    print 'FROM x IN L LET z BE 4 WHERE x > 1 SELECT x, z, (x, z):'
+    print Kviri('x').inSource(L
+        ).let('z').be(4
+        ).where(lambda **names: names['x'] > 1
+        ).select('x', 'z',
+            lambda **names: (names['x'], names['z']))
+
     print 'FROM x IN L ORDER BY x ASC SELECT x'
     print Kviri('x').inSource(L
         ).orderBy(('x', Kviri.ASC)

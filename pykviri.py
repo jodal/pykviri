@@ -1,36 +1,100 @@
-from pprint import pformat
+#! /usr/bin/env python
+
+import pprint
 
 class Kviri(object):
+    """
+    Kviri -- LINQ for objects in Python
+
+    >>> print Kviri('x').inSource(range(10)
+    ...     ).where(lambda **n: n['x'] > 3 and n['x'] % 2 == 0
+    ...     ).orderBy(('x', Kviri.DESC)
+    ...     ).select('x')
+    [{'x': 8}, {'x': 6}, {'x': 4}]
+    """
+
     ASC=False
     DESC=True
 
-    def __init__(self, name):
+    def __init__(self, name=None):
+        """
+        >>> k = Kviri('x')
+        >>> k._unused_name == 'x'
+        True
+        >>> k.bindings == [{}]
+        True
+        >>> k.results == []
+        True
+
+        >>> k = Kviri()
+        >>> k._unused_name is None
+        True
+        >>> k.bindings == [{}]
+        True
+        >>> k.results == []
+        True
+        """
+
         self._unused_name = None
         self.bindings = [{}]
-        self.results = None
+        self.results = []
         self.fromName(name)
 
     def __repr__(self):
-        return self.results
+        return pprint.saferepr(self.results)
 
     def __str__(self):
-        return pformat(self.results)
-
-    def _set_name(self, name):
-        assert self._unused_name is None
-        self._unused_name = name
+        return pprint.pformat(self.results)
 
     def _get_name(self):
+        """
+        >>> k = Kviri('x')
+        >>> k._unused_name == 'x'
+        True
+        >>> k._get_name()
+        'x'
+        >>> k._unused_name is None
+        True
+        """
+
         name = self._unused_name
         self._unused_name = None
         assert name is not None
         return name
 
     def fromName(self, name):
-        self._set_name(name)
+        """
+        >>> k = Kviri()
+        >>> k._unused_name == None
+        True
+        >>> k.fromName('x')
+        []
+        >>> k._unused_name == 'x'
+        True
+
+        >>> k = Kviri('x')
+        >>> k._unused_name == 'x'
+        True
+        >>> try:
+        ...     k.fromName('x')
+        ... except AssertionError:
+        ...     print 'OK'
+        OK
+        >>> k._unused_name == 'x'
+        True
+        """
+
+        assert self._unused_name is None
+        self._unused_name = name
         return self
 
     def inSource(self, source):
+        """
+        >>> k = Kviri('x').inSource(range(3))
+        >>> k.bindings
+        [{'x': 0}, {'x': 1}, {'x': 2}]
+        """
+
         name = self._get_name()
         new_bindings = []
         for old_binding in self.bindings:
@@ -79,3 +143,7 @@ class Kviri(object):
                     result.append((selector, binding[selector]))
             self.results.append(dict(result))
         return self
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

@@ -126,7 +126,7 @@ if __name__ == '__main__':
         ).orderBy(('x', False)
         ).select('x')
 
-    print 'FROM x IN L ORDER BY x ASC SELECT x'
+    print 'FROM x IN L ORDER BY x DESC SELECT x'
     print Kviri('x').inSource(L
         ).orderBy(('x', True)
         ).select('x')

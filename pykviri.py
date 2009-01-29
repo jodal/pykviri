@@ -83,35 +83,50 @@ class Kviri(object):
 if __name__ == '__main__':
     L = [1, 2, 3]
     M = [7, 8, 9]
+    print 'L=%s, M=%s' % (L, M)
+
+    print 'FROM x IN L WHERE x > 1 SELECT x:'
     print Kviri('x').inSource(L
         ).where(lambda **names: names['x'] > 1
         ).select('x')
+
+    print 'FROM x IN L WHERE x > 1 FROM y in M SELECT x, y:'
     print Kviri('x').inSource(L
         ).where(lambda **names: names['x'] > 1
         ).andFrom('y').inSource(M
         ).select('x', 'y')
+
+    print 'FROM x IN L FROM y IN M WHERE x > 1 SELECT x, y:'
     print Kviri('x').inSource(L
         ).andFrom('y').inSource(M
         ).where(lambda **names: names['x'] > 1
         ).select('x', 'y')
+
+    print 'FROM x IN L FROM y in M WHERE x > 1 AND y in (8, 9) SELECT x, y:'
     print Kviri('x').inSource(L
         ).andFrom('y').inSource(M
         ).where(lambda **names: names['x'] > 1 and names['y'] in (8, 9)
         ).select('x', 'y')
+
+    print 'FROM x IN L LET z BE 4 WHERE x > 1 SELECT x, z:'
     print Kviri('x').inSource(L
-        ).andFrom('y').inSource(M
         ).let('z').be(4
         ).where(lambda **names: names['x'] > 1
-        ).select('x', 'y', 'z')
+        ).select('x', 'z')
+
+    print 'FROM x IN L LET z BE 4 WHERE x > 1 SELECT x, z, x * z:'
     print Kviri('x').inSource(L
-        ).andFrom('y').inSource(M
         ).let('z').be(4
         ).where(lambda **names: names['x'] > 1
-        ).select('x', 'y', 'z',
-            lambda **names: names['x'] * names['y'] * names['z'])
-    print Kviri('x').inSource(L + M
+        ).select('x', 'z',
+            lambda **names: names['x'] * names['z'])
+
+    print 'FROM x IN L ORDER BY x ASC SELECT x'
+    print Kviri('x').inSource(L
         ).orderBy(('x', False)
         ).select('x')
-    print Kviri('x').inSource(L + M
+
+    print 'FROM x IN L ORDER BY x ASC SELECT x'
+    print Kviri('x').inSource(L
         ).orderBy(('x', True)
         ).select('x')

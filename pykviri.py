@@ -29,10 +29,10 @@ class Kviri(object):
     def inSource(self, source):
         name = self._get_name()
         new_bindings = []
-        for b in self.bindings:
-            for s in source:
-                new_binding = b.copy()
-                new_binding.update({name: s})
+        for old_binding in self.bindings:
+            for value in source:
+                new_binding = old_binding.copy()
+                new_binding.update({name: value})
                 new_bindings.append(new_binding)
         self.bindings = new_bindings
         return self
@@ -44,8 +44,8 @@ class Kviri(object):
     def be(self, value):
         name = self._get_name()
         new_bindings = []
-        for b in self.bindings:
-            new_binding = b.copy()
+        for old_binding in self.bindings:
+            new_binding = old_binding.copy()
             new_binding.update({name: value})
             new_bindings.append(new_binding)
         self.bindings = new_bindings
@@ -53,26 +53,26 @@ class Kviri(object):
 
     def where(self, func):
         new_bindings = []
-        for b in self.bindings:
-            if func(**b):
-                new_bindings.append(b)
+        for old_binding in self.bindings:
+            if func(**old_binding):
+                new_bindings.append(old_binding)
         self.bindings = new_bindings
         return self
 
     def orderBy(self, *orderings):
-        for (o, reverse) in reversed(orderings):
-            self.bindings.sort(key=lambda b: b[o], reverse=reverse)
+        for (order_key, reverse) in reversed(orderings):
+            self.bindings.sort(key=lambda b: b[order_key], reverse=reverse)
         return self
 
     def select(self, *selectors):
         self.results = []
-        for b in self.bindings:
+        for binding in self.bindings:
             result = []
-            for i, s in enumerate(selectors):
-                if callable(s):
-                    result.append((i, s(**b)))
+            for i, selector in enumerate(selectors):
+                if callable(selector):
+                    result.append((i, selector(**binding)))
                 else:
-                    result.append((s, b[s]))
+                    result.append((selector, binding[selector]))
             self.results.append(dict(result))
         return self
 

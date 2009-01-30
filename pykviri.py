@@ -68,7 +68,7 @@ class Kviri(object):
         >>> k._unused_name == None
         True
         >>> k._set_name('x')
-        []
+        [{}]
         >>> k._unused_name == 'x'
         True
 

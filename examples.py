@@ -249,6 +249,22 @@ A query without a select() clause returns the bindings instead:
     {'x': 2}
     {'x': 3}
 
+
+Grouping results
+----------------
+
+We can group results by some criteria:
+
+    >>> Kviri('x').in_(L).group('x').by('x % 2')
+    {0: [(2,)], 1: [(1,), (3,)]}
+
+Or a bit more usefull:
+
+    >>> print Kviri('p').in_(persons).group('p').by('p.age')
+    {19: [(Person(Fred),), (Person(George),)],
+     27: [(Person(Alice),)],
+     28: [(Person(Bob),)]}
+
 """
 
 if __name__ == '__main__':

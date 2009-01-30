@@ -21,7 +21,7 @@ class Kviri(object):
         True
         >>> k._bindings == [{}]
         True
-        >>> k._results == []
+        >>> k._results == None
         True
 
         >>> k = Kviri()
@@ -29,17 +29,17 @@ class Kviri(object):
         True
         >>> k._bindings == [{}]
         True
-        >>> k._results == []
+        >>> k._results == None
         True
         """
 
         self._unused_name = None
         self._bindings = [{}]
-        self._results = []
+        self._results = None
         self.from_(name)
 
     def __iter__(self):
-        if self._results:
+        if self._results is not None:
             return self._results.__iter__()
         else:
             return self._bindings.__iter__()
@@ -108,6 +108,42 @@ class Kviri(object):
             new_bindings.append(new_binding)
         return new_bindings
 
+    def _get_selection(self, selectors, binding):
+        """
+        >>> k = Kviri()
+        >>> k._get_selection(['x'], {'x': 1, 'y': 2})
+        (1,)
+        >>> k._get_selection(['x', 'y'], {'x': 1, 'y': 2})
+        (1, 2)
+        >>> k._get_selection(['y', 'x'], {'x': 1, 'y': 2})
+        (2, 1)
+        """
+
+        result = []
+        for i, selector in enumerate(selectors):
+            result.append(self._get_evaluation(selector, binding))
+        return tuple(result)
+
+    def _get_evaluation(self, code, binding=None):
+        """
+        >>> k = Kviri()
+        >>> binding = {'x': 1}
+        >>> k._get_evaluation('1 + 1')
+        2
+        >>> k._get_evaluation('1 + x', binding)
+        2
+        >>> binding
+        {'x': 1}
+        """
+
+        if binding is None:
+            binding = {}
+        if callable(code):
+            return code(**binding)
+        else:
+            return eval(code, binding.copy())
+
+
     def _filter(self, filter):
         """
         >>> Kviri('x').in_(range(10))._filter(lambda x, **rest: x % 2 == 0)
@@ -119,11 +155,8 @@ class Kviri(object):
 
         new_bindings = []
         for binding in self._bindings:
-            if callable(filter):
-                if filter(**binding):
-                    new_bindings.append(binding)
-            elif eval(filter, binding.copy()):
-                    new_bindings.append(binding)
+            if self._get_evaluation(filter, binding):
+                new_bindings.append(binding)
         self._bindings = new_bindings
         return self
 
@@ -225,13 +258,7 @@ class Kviri(object):
 
         self._results = []
         for binding in self._bindings:
-            result = []
-            for i, selector in enumerate(selectors):
-                if callable(selector):
-                    result.append(selector(**binding))
-                else:
-                    result.append(eval(selector, binding.copy()))
-            self._results.append(tuple(result))
+            self._results.append(self._get_selection(selectors, binding))
         return self
 
     def distinct(self):
@@ -249,6 +276,40 @@ class Kviri(object):
             if result not in distinct_results:
                 distinct_results.append(result)
         self._results = distinct_results
+        return self
+
+    def group(self, *selectors):
+        """
+        >>> k = Kviri().group('x', 'y')
+        >>> k._unused_selectors
+        ('x', 'y')
+        """
+
+        self._unused_selectors = selectors
+        return self
+
+    def by(self, criteria):
+        """
+        >>> k = Kviri('x').in_(range(10))
+        >>> print k.group('x').by('x % 2')
+        {0: [(0,), (2,), (4,), (6,), (8,)], 1: [(1,), (3,), (5,), (7,), (9,)]}
+
+        >>> print k.from_('y').in_(('a', 'b')).group('x', 'y').by('x % 5')
+        {0: [(0, 'a'), (5, 'a'), (0, 'b'), (5, 'b')],
+         1: [(1, 'a'), (6, 'a'), (1, 'b'), (6, 'b')],
+         2: [(2, 'a'), (7, 'a'), (2, 'b'), (7, 'b')],
+         3: [(3, 'a'), (8, 'a'), (3, 'b'), (8, 'b')],
+         4: [(4, 'a'), (9, 'a'), (4, 'b'), (9, 'b')]}
+        """
+
+        selectors = self._unused_selectors
+        self._unused_selectors = None
+        self._results = {}
+        for binding in self._bindings:
+            key = self._get_evaluation(criteria, binding)
+            if key not in self._results:
+                self._results[key] = []
+            self._results[key].append(self._get_selection(selectors, binding))
         return self
 
 if __name__ == '__main__':

@@ -85,14 +85,14 @@ Simpler, as we use evaluated strings instead of lambdas.
 FROM x IN L ORDER BY x ASC SELECT x:
 
 >>> print Kviri('x').in_(L
-...    ).order_by(('x', Kviri.ASC)
+...    ).order_by('x'
 ...    ).select('x')
 [(1,), (2,), (3,)]
 
 FROM x IN L ORDER BY x DESC SELECT x:
 
 >>> print Kviri('x').in_(L
-...    ).order_by(('x', Kviri.DESC)
+...    ).order_by('x desc'
 ...    ).select('x')
 [(3,), (2,), (1,)]
 
@@ -100,7 +100,7 @@ FROM x IN L FROM y IN M ORDER BY x DESC, y DESC SELECT x, y:
 
 >>> print Kviri('x').in_(L
 ...    ).from_('y').in_(M
-...    ).order_by(('x', Kviri.DESC), ('y', Kviri.DESC)
+...    ).order_by('x desc', 'y desc'
 ...    ).select('x', 'y')
 [(3, 9), (3, 8), (3, 7), (2, 9), (2, 8), (2, 7), (1, 9), (1, 8), (1, 7)]
 
@@ -108,7 +108,7 @@ FROM x IN L FROM y IN M ORDER BY x DESC, y ASC SELECT x, y:
 
 >>> print Kviri('x').in_(L
 ...    ).from_('y').in_(M
-...    ).order_by(('x', Kviri.DESC), ('y', Kviri.ASC)
+...    ).order_by('x desc', 'y asc'
 ...    ).select('x', 'y')
 [(3, 7), (3, 8), (3, 9), (2, 7), (2, 8), (2, 9), (1, 7), (1, 8), (1, 9)]
 
@@ -116,7 +116,7 @@ FROM x IN L FROM y IN M ORDER BY x ASC, y DESC SELECT x, y:
 
 >>> print Kviri('x').in_(L
 ...    ).from_('y').in_(M
-...    ).order_by(('x', Kviri.ASC), ('y', Kviri.DESC)
+...    ).order_by('x asc', 'y desc'
 ...    ).select('x', 'y')
 [(1, 9), (1, 8), (1, 7), (2, 9), (2, 8), (2, 7), (3, 9), (3, 8), (3, 7)]
 

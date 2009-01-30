@@ -6,7 +6,7 @@ Kviri -- LINQ for objects in Python
 >>> Kviri('x').in_(range(10)
 ...     ).from_('y').in_(range(10)
 ...     ).where('x > 3 and (x + y) % 10 == 0'
-...     ).order_by(('x', Kviri.DESC)
+...     ).order_by('x desc'
 ...     ).select('x', 'y')
 [(9, 1), (8, 2), (7, 3), (6, 4), (5, 5), (4, 6)]
 """
@@ -14,9 +14,6 @@ Kviri -- LINQ for objects in Python
 import pprint
 
 class Kviri(object):
-    ASC = False
-    DESC = True
-
     def __init__(self, name=None):
         """
         >>> k = Kviri('x')
@@ -161,24 +158,32 @@ class Kviri(object):
     def order_by(self, *orderings):
         """
         >>> k = Kviri('x').in_(range(3))
-        >>> print k.order_by(('x', Kviri.DESC)).select('x')
-        [(2,), (1,), (0,)]
-        >>> print k.order_by(('x', Kviri.ASC)).select('x')
+        >>> print k.order_by('x').select('x')
         [(0,), (1,), (2,)]
+        >>> print k.order_by(('x DESC')).select('x')
+        [(2,), (1,), (0,)]
 
         >>> k2 = k.from_('y').in_(range(7, 9))
-        >>> print k2.order_by(('y', Kviri.ASC), ('x', Kviri.ASC)
-        ...     ).select('x', 'y')
+        >>> print k2.order_by('y AsC', 'x aSc').select('x', 'y')
         [(0, 7), (1, 7), (2, 7), (0, 8), (1, 8), (2, 8)]
 
-        >>> k3 = Kviri('name').in_(('George', 'Fred', 'Mary', 'Bob'))
-        >>> print k3.order_by(('name', Kviri.ASC)).select('name')
+        >>> Kviri('name').in_(('George', 'Fred', 'Mary', 'Bob')
+        ...     ).order_by('name').select('name')
         [('Bob',), ('Fred',), ('George',), ('Mary',)]
         """
 
         orderings = reversed(orderings) # Sort by the last ordering first
-        for (order_key, reverse) in orderings:
-            self._bindings.sort(key=lambda b: b[order_key], reverse=reverse)
+        for ordering in orderings:
+            if ordering.lower().endswith(' desc'):
+                reverse = True
+                name = ordering[:-len(' desc')]
+            else:
+                reverse = False
+                if ordering.lower().endswith(' asc'):
+                    name = ordering[:-len(' asc')]
+                else:
+                    name = ordering
+            self._bindings.sort(key=lambda b: b[name], reverse=reverse)
         return self
 
     def select(self, *selectors):

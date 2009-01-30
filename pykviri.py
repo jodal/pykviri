@@ -88,44 +88,23 @@ class Kviri(object):
         self._unused_name = name
         return self
 
-    from_ = _set_name
-
-    def in_(self, source):
+    def _get_bindings_with_new(self, name, value):
         """
         >>> k = Kviri('x').in_(range(3))
-        >>> print k.select('x')
-        [(0,), (1,), (2,)]
+        >>> k._bindings
+        [{'x': 0}, {'x': 1}, {'x': 2}]
+        >>> k._get_bindings_with_new('y', 3)
+        [{'y': 3, 'x': 0}, {'y': 3, 'x': 1}, {'y': 3, 'x': 2}]
         """
 
-        name = self._get_name()
-        new_bindings = []
-        for value in source:
-            for old_binding in self._bindings:
-                new_binding = old_binding.copy()
-                new_binding.update({name: value})
-                new_bindings.append(new_binding)
-        self._bindings = new_bindings
-        return self
-
-    let = _set_name
-
-    def be(self, value):
-        """
-        >>> k = Kviri('x').in_(range(2)).let('y').be(4)
-        >>> print k.select('x', 'y')
-        [(0, 4), (1, 4)]
-        """
-
-        name = self._get_name()
         new_bindings = []
         for old_binding in self._bindings:
             new_binding = old_binding.copy()
             new_binding.update({name: value})
             new_bindings.append(new_binding)
-        self._bindings = new_bindings
-        return self
+        return new_bindings
 
-    def where(self, func):
+    def _filter(self, func):
         """
         >>> k = Kviri('x').in_(range(10)).where(
         ...    lambda **n: n['x'] % 2 == 0)
@@ -140,8 +119,39 @@ class Kviri(object):
         self._bindings = new_bindings
         return self
 
+    from_ = _set_name
+
+    def in_(self, source):
+        """
+        >>> k = Kviri('x').in_(range(3))
+        >>> print k.select('x')
+        [(0,), (1,), (2,)]
+        """
+
+        name = self._get_name()
+        new_bindings = []
+        for value in source:
+            new_bindings += self._get_bindings_with_new(name, value)
+        self._bindings = new_bindings
+        return self
+
+    let = _set_name
+
+    def be(self, value):
+        """
+        >>> k = Kviri('x').in_(range(2)).let('y').be(4)
+        >>> print k.select('x', 'y')
+        [(0, 4), (1, 4)]
+        """
+
+        name = self._get_name()
+        self._bindings = self._get_bindings_with_new(name, value)
+        return self
+
     join = _set_name
-    on = where
+    on = _filter
+
+    where = _filter
 
     def order_by(self, *orderings):
         """

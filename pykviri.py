@@ -7,7 +7,7 @@ Kviri -- LINQ for objects in Python
 ...     ).where(lambda **n: n['x'] > 3 and n['x'] % 2 == 0
 ...     ).order_by(('x', Kviri.DESC)
 ...     ).select('x')
-[{'x': 8}, {'x': 6}, {'x': 4}]
+[(8,), (6,), (4,)]
 """
 
 import pprint
@@ -94,7 +94,7 @@ class Kviri(object):
         """
         >>> k = Kviri('x').in_(range(3))
         >>> print k.select('x')
-        [{'x': 0}, {'x': 1}, {'x': 2}]
+        [(0,), (1,), (2,)]
         """
 
         name = self._get_name()
@@ -113,7 +113,7 @@ class Kviri(object):
         """
         >>> k = Kviri('x').in_(range(2)).let('y').be(4)
         >>> print k.select('x', 'y')
-        [{'x': 0, 'y': 4}, {'x': 1, 'y': 4}]
+        [(0, 4), (1, 4)]
         """
 
         name = self._get_name()
@@ -130,7 +130,7 @@ class Kviri(object):
         >>> k = Kviri('x').in_(range(10)).where(
         ...    lambda **n: n['x'] % 2 == 0)
         >>> print k.select('x')
-        [{'x': 0}, {'x': 2}, {'x': 4}, {'x': 6}, {'x': 8}]
+        [(0,), (2,), (4,), (6,), (8,)]
         """
 
         new_bindings = []
@@ -144,21 +144,16 @@ class Kviri(object):
         """
         >>> k = Kviri('x').in_(range(3))
         >>> print k.order_by(('x', Kviri.DESC)).select('x')
-        [{'x': 2}, {'x': 1}, {'x': 0}]
+        [(2,), (1,), (0,)]
         >>> print k.order_by(('x', Kviri.ASC)).select('x')
-        [{'x': 0}, {'x': 1}, {'x': 2}]
+        [(0,), (1,), (2,)]
         >>> k2 = k.from_('y').in_(range(7, 9))
         >>> print k2.order_by(('y', Kviri.ASC), ('x', Kviri.ASC)
         ...     ).select('x', 'y')
-        [{'x': 0, 'y': 7},
-         {'x': 1, 'y': 7},
-         {'x': 2, 'y': 7},
-         {'x': 0, 'y': 8},
-         {'x': 1, 'y': 8},
-         {'x': 2, 'y': 8}]
-        >>> k3 = Kviri('n').in_(('George', 'Fred', 'Mary', 'Bob'))
-        >>> print k3.order_by(('n', Kviri.ASC)).select('n')
-        [{'n': 'Bob'}, {'n': 'Fred'}, {'n': 'George'}, {'n': 'Mary'}]
+        [(0, 7), (1, 7), (2, 7), (0, 8), (1, 8), (2, 8)]
+        >>> k3 = Kviri('name').in_(('George', 'Fred', 'Mary', 'Bob'))
+        >>> print k3.order_by(('name', Kviri.ASC)).select('name')
+        [('Bob',), ('Fred',), ('George',), ('Mary',)]
         """
 
         orderings = reversed(orderings) # Sort by the last ordering first
@@ -171,25 +166,20 @@ class Kviri(object):
         >>> k = Kviri('x').in_(range(3)
         ...     ).from_('y').in_(range(7, 9))
         >>> print k.select('x')
-        [{'x': 0}, {'x': 1}, {'x': 2}, {'x': 0}, {'x': 1}, {'x': 2}]
+        [(0,), (1,), (2,), (0,), (1,), (2,)]
         >>> print k.select('y')
-        [{'y': 7}, {'y': 7}, {'y': 7}, {'y': 8}, {'y': 8}, {'y': 8}]
+        [(7,), (7,), (7,), (8,), (8,), (8,)]
         >>> print k.select('x', 'y')
-        [{'x': 0, 'y': 7},
-         {'x': 1, 'y': 7},
-         {'x': 2, 'y': 7},
-         {'x': 0, 'y': 8},
-         {'x': 1, 'y': 8},
-         {'x': 2, 'y': 8}]
+        [(0, 7), (1, 7), (2, 7), (0, 8), (1, 8), (2, 8)]
         >>> print k.select('x', 'y',
         ...     lambda **n: n['x'] + n['y'],
         ...     lambda **n: n['x'] * n['y'])
-        [{2: 7, 3: 0, 'x': 0, 'y': 7},
-         {2: 8, 3: 7, 'x': 1, 'y': 7},
-         {2: 9, 3: 14, 'x': 2, 'y': 7},
-         {2: 8, 3: 0, 'x': 0, 'y': 8},
-         {2: 9, 3: 8, 'x': 1, 'y': 8},
-         {2: 10, 3: 16, 'x': 2, 'y': 8}]
+        [(0, 7, 7, 0),
+         (1, 7, 8, 7),
+         (2, 7, 9, 14),
+         (0, 8, 8, 0),
+         (1, 8, 9, 8),
+         (2, 8, 10, 16)]
         """
 
         self._results = []
@@ -197,10 +187,10 @@ class Kviri(object):
             result = []
             for i, selector in enumerate(selectors):
                 if callable(selector):
-                    result.append((i, selector(**binding)))
+                    result.append(selector(**binding))
                 else:
-                    result.append((selector, binding[selector]))
-            self._results.append(dict(result))
+                    result.append(binding[selector])
+            self._results.append(tuple(result))
         return self
 
 if __name__ == '__main__':

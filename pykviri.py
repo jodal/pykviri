@@ -41,10 +41,10 @@ class Kviri(object):
         self.from_(name)
 
     def __repr__(self):
-        return pprint.saferepr(self._results)
+        return pprint.saferepr(self._results or self._bindings)
 
     def __str__(self):
-        return pprint.pformat(self._results)
+        return pprint.pformat(self._results or self._bindings)
 
     def _get_name(self):
         """

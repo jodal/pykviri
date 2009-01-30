@@ -1,18 +1,18 @@
 #! /usr/bin/env python
 
+"""
+Kviri -- LINQ for objects in Python
+
+>>> print Kviri('x').inSource(range(10)
+...     ).where(lambda **n: n['x'] > 3 and n['x'] % 2 == 0
+...     ).orderBy(('x', Kviri.DESC)
+...     ).select('x')
+[{'x': 8}, {'x': 6}, {'x': 4}]
+"""
+
 import pprint
 
 class Kviri(object):
-    """
-    Kviri -- LINQ for objects in Python
-
-    >>> print Kviri('x').inSource(range(10)
-    ...     ).where(lambda **n: n['x'] > 3 and n['x'] % 2 == 0
-    ...     ).orderBy(('x', Kviri.DESC)
-    ...     ).select('x')
-    [{'x': 8}, {'x': 6}, {'x': 4}]
-    """
-
     ASC=False
     DESC=True
 
@@ -110,6 +110,12 @@ class Kviri(object):
     let = _set_name
 
     def be(self, value):
+        """
+        >>> k = Kviri('x').inSource(range(2)).let('y').be(4)
+        >>> k.bindings
+        [{'y': 4, 'x': 0}, {'y': 4, 'x': 1}]
+        """
+
         name = self._get_name()
         new_bindings = []
         for old_binding in self.bindings:
@@ -120,6 +126,13 @@ class Kviri(object):
         return self
 
     def where(self, func):
+        """
+        >>> k = Kviri('x').inSource(range(10)).where(
+        ...    lambda **n: n['x'] % 2 == 0)
+        >>> k.bindings
+        [{'x': 0}, {'x': 2}, {'x': 4}, {'x': 6}, {'x': 8}]
+        """
+
         new_bindings = []
         for old_binding in self.bindings:
             if func(**old_binding):
@@ -128,11 +141,44 @@ class Kviri(object):
         return self
 
     def orderBy(self, *orderings):
+        """
+        >>> k = Kviri('x').inSource(range(3))
+        >>> k.orderBy(('x', Kviri.DESC)).select('x')
+        [{'x': 2}, {'x': 1}, {'x': 0}]
+        >>> k.orderBy(('x', Kviri.ASC)).select('x')
+        [{'x': 0}, {'x': 1}, {'x': 2}]
+        """
+
         for (order_key, reverse) in reversed(orderings):
             self.bindings.sort(key=lambda b: b[order_key], reverse=reverse)
         return self
 
     def select(self, *selectors):
+        """
+        >>> k = Kviri('x').inSource(range(3)
+        ...     ).fromName('y').inSource(range(7, 9))
+        >>> print k.select('x')
+        [{'x': 0}, {'x': 1}, {'x': 2}, {'x': 0}, {'x': 1}, {'x': 2}]
+        >>> print k.select('y')
+        [{'y': 7}, {'y': 7}, {'y': 7}, {'y': 8}, {'y': 8}, {'y': 8}]
+        >>> print k.select('x', 'y')
+        [{'x': 0, 'y': 7},
+         {'x': 1, 'y': 7},
+         {'x': 2, 'y': 7},
+         {'x': 0, 'y': 8},
+         {'x': 1, 'y': 8},
+         {'x': 2, 'y': 8}]
+        >>> print k.select('x', 'y',
+        ...     lambda **n: n['x'] + n['y'],
+        ...     lambda **n: n['x'] * n['y'])
+        [{2: 7, 3: 0, 'x': 0, 'y': 7},
+         {2: 8, 3: 7, 'x': 1, 'y': 7},
+         {2: 9, 3: 14, 'x': 2, 'y': 7},
+         {2: 8, 3: 0, 'x': 0, 'y': 8},
+         {2: 9, 3: 8, 'x': 1, 'y': 8},
+         {2: 10, 3: 16, 'x': 2, 'y': 8}]
+        """
+
         self.results = []
         for binding in self.bindings:
             result = []

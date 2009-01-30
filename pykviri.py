@@ -21,30 +21,30 @@ class Kviri(object):
         >>> k = Kviri('x')
         >>> k._unused_name == 'x'
         True
-        >>> k.bindings == [{}]
+        >>> k._bindings == [{}]
         True
-        >>> k.results == []
+        >>> k._results == []
         True
 
         >>> k = Kviri()
         >>> k._unused_name is None
         True
-        >>> k.bindings == [{}]
+        >>> k._bindings == [{}]
         True
-        >>> k.results == []
+        >>> k._results == []
         True
         """
 
         self._unused_name = None
-        self.bindings = [{}]
-        self.results = []
+        self._bindings = [{}]
+        self._results = []
         self.fromName(name)
 
     def __repr__(self):
-        return pprint.saferepr(self.results)
+        return pprint.saferepr(self._results)
 
     def __str__(self):
-        return pprint.pformat(self.results)
+        return pprint.pformat(self._results)
 
     def _get_name(self):
         """
@@ -100,11 +100,11 @@ class Kviri(object):
         name = self._get_name()
         new_bindings = []
         for value in source:
-            for old_binding in self.bindings:
+            for old_binding in self._bindings:
                 new_binding = old_binding.copy()
                 new_binding.update({name: value})
                 new_bindings.append(new_binding)
-        self.bindings = new_bindings
+        self._bindings = new_bindings
         return self
 
     let = _set_name
@@ -118,11 +118,11 @@ class Kviri(object):
 
         name = self._get_name()
         new_bindings = []
-        for old_binding in self.bindings:
+        for old_binding in self._bindings:
             new_binding = old_binding.copy()
             new_binding.update({name: value})
             new_bindings.append(new_binding)
-        self.bindings = new_bindings
+        self._bindings = new_bindings
         return self
 
     def where(self, func):
@@ -134,10 +134,10 @@ class Kviri(object):
         """
 
         new_bindings = []
-        for old_binding in self.bindings:
+        for old_binding in self._bindings:
             if func(**old_binding):
                 new_bindings.append(old_binding)
-        self.bindings = new_bindings
+        self._bindings = new_bindings
         return self
 
     def orderBy(self, *orderings):
@@ -150,7 +150,7 @@ class Kviri(object):
         """
 
         for (order_key, reverse) in reversed(orderings):
-            self.bindings.sort(key=lambda b: b[order_key], reverse=reverse)
+            self._bindings.sort(key=lambda b: b[order_key], reverse=reverse)
         return self
 
     def select(self, *selectors):
@@ -179,15 +179,15 @@ class Kviri(object):
          {2: 10, 3: 16, 'x': 2, 'y': 8}]
         """
 
-        self.results = []
-        for binding in self.bindings:
+        self._results = []
+        for binding in self._bindings:
             result = []
             for i, selector in enumerate(selectors):
                 if callable(selector):
                     result.append((i, selector(**binding)))
                 else:
                     result.append((selector, binding[selector]))
-            self.results.append(dict(result))
+            self._results.append(dict(result))
         return self
 
 if __name__ == '__main__':

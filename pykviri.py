@@ -140,6 +140,9 @@ class Kviri(object):
         self._bindings = new_bindings
         return self
 
+    join = _set_name
+    on = where
+
     def order_by(self, *orderings):
         """
         >>> k = Kviri('x').in_(range(3))

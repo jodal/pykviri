@@ -111,6 +111,11 @@ FROM x IN L FROM y IN M SELECT x DISTINCT:
 ...     ).distinct()
 [(1,), (2,), (3,)]
 
+FROM x IN L JOIN y IN L ON (x == y) SELECT x, y:
+>>> print Kviri('x').in_(L
+...     ).join('y').in_(L).on(lambda **n: n['x'] == n['y']
+...     ).select('x', 'y')
+[(1, 1), (2, 2), (3, 3)]
 """
 
 if __name__ == '__main__':

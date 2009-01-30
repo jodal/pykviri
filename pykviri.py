@@ -104,18 +104,25 @@ class Kviri(object):
             new_bindings.append(new_binding)
         return new_bindings
 
-    def _filter(self, func):
+    def _filter(self, filter):
         """
         >>> k = Kviri('x').in_(range(10)).where(
         ...    lambda **n: n['x'] % 2 == 0)
         >>> print k.select('x')
         [(0,), (2,), (4,), (6,), (8,)]
+
+        >>> k = Kviri('x').in_(range(10)).where('x % 2 == 0')
+        >>> print k.select('x')
+        [(0,), (2,), (4,), (6,), (8,)]
         """
 
         new_bindings = []
-        for old_binding in self._bindings:
-            if func(**old_binding):
-                new_bindings.append(old_binding)
+        for binding in self._bindings:
+            if callable(filter):
+                if filter(**binding):
+                    new_bindings.append(binding)
+            elif eval(filter, binding):
+                new_bindings.append(binding)
         self._bindings = new_bindings
         return self
 
@@ -190,8 +197,16 @@ class Kviri(object):
         [(0, 7), (1, 7), (2, 7), (0, 8), (1, 8), (2, 8)]
 
         >>> print k.select('x', 'y',
-        ...     lambda **n: n['x'] + n['y'],
+        ...     lambda x, y, **n: x + y,
         ...     lambda **n: n['x'] * n['y'])
+        [(0, 7, 7, 0),
+         (1, 7, 8, 7),
+         (2, 7, 9, 14),
+         (0, 8, 8, 0),
+         (1, 8, 9, 8),
+         (2, 8, 10, 16)]
+
+        >>> print k.select('x', 'y', 'x + y', 'x * y')
         [(0, 7, 7, 0),
          (1, 7, 8, 7),
          (2, 7, 9, 14),
@@ -207,7 +222,7 @@ class Kviri(object):
                 if callable(selector):
                     result.append(selector(**binding))
                 else:
-                    result.append(binding[selector])
+                    result.append(eval(selector, binding))
             self._results.append(tuple(result))
         return self
 

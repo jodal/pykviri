@@ -15,7 +15,16 @@ FROM x IN L WHERE x > 1 SELECT x:
 ...    ).select('x')
 [(2,), (3,)]
 
+FROM x IN L FROM y IN M WHERE x > 1 SELECT x, y:
+
+>>> print Kviri('x').in_(L
+...    ).from_('y').in_(M
+...    ).where(lambda **names: names['x'] > 1
+...    ).select('x', 'y')
+[(2, 7), (3, 7), (2, 8), (3, 8), (2, 9), (3, 9)]
+
 FROM x IN L WHERE x > 1 FROM y in M SELECT x, y:
+Faster, as we filter as early as possible.
 
 >>> print Kviri('x').in_(L
 ...    ).where(lambda **names: names['x'] > 1
@@ -23,11 +32,12 @@ FROM x IN L WHERE x > 1 FROM y in M SELECT x, y:
 ...    ).select('x', 'y')
 [(2, 7), (3, 7), (2, 8), (3, 8), (2, 9), (3, 9)]
 
-FROM x IN L FROM y IN M WHERE x > 1 SELECT x, y:
+FROM x IN L WHERE x > 1 FROM y in M SELECT x, y:
+Simpler where(), as string is evaluated in context of the bindings.
 
 >>> print Kviri('x').in_(L
+...    ).where('x > 1'
 ...    ).from_('y').in_(M
-...    ).where(lambda **names: names['x'] > 1
 ...    ).select('x', 'y')
 [(2, 7), (3, 7), (2, 8), (3, 8), (2, 9), (3, 9)]
 
@@ -64,6 +74,17 @@ FROM x IN L LET z BE 4 WHERE x > 1 SELECT x, z, (x, z):
 ...    ).select('x', 'z',
 ...        lambda **names: (names['x'], names['z']))
 [(2, 4, (2, 4)), (3, 4, (3, 4))]
+
+FROM x IN L LET z BE 4 WHERE x > 1 SELECT x, z, (x, z):
+Simpler, as we use evaluated strings instead of lambdas.
+
+>>> print Kviri('x').in_(L
+...    ).let('z').be(4
+...    ).where('x > 1'
+...    ).select('x', 'z', '(x, z)')
+[(2, 4, (2, 4)), (3, 4, (3, 4))]
+
+
 
 FROM x IN L ORDER BY x ASC SELECT x:
 

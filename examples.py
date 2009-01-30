@@ -167,6 +167,47 @@ Or, using evaluated strings instead of lambdas.
     ...     ).select('x', 'y')
     [(1, 1), (2, 2), (3, 3)]
 
+
+Working with objects
+--------------------
+
+Creating a class and some instances:
+
+    >>> class Person(object):
+    ...     def __init__(self, name, age):
+    ...         self.name = name
+    ...         self.age = age
+    ...     def __repr__(self):
+    ...         return 'Person(%s)' % self.name
+    >>> persons = [
+    ...     Person('Alice', 27),
+    ...     Person('Bob', 28),
+    ...     Person('Fred', 19),
+    ...     Person('George', 19),
+    ... ]
+
+All persons of age 19:
+
+    >>> Kviri('p').in_(persons).where('p.age == 19').select('p')
+    [(Person(Fred),), (Person(George),)]
+
+The names of everybody older than 21:
+
+    >>> Kviri('p').in_(persons).where('p.age > 21').select('p.name')
+    [('Alice',), ('Bob',)]
+
+Everybody, ordered by age, then name:
+
+    >>> Kviri('p').in_(persons).order_by('p.age', 'p.name').select('p')
+    [(Person(Fred),), (Person(George),), (Person(Alice),), (Person(Bob),)]
+
+Join people by age, but not with themselves:
+
+    >>> Kviri('p').in_(persons
+    ...     ).join('q').in_(persons).on('p.age == q.age and p is not q'
+    ...     ).select('p', 'q')
+    [(Person(George), Person(Fred)), (Person(Fred), Person(George))]
+
 """
 
 if __name__ == '__main__':

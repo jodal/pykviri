@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 """
-Examples on Kviri usage
+Examples of Kviri usage
 =======================
 
 Before we begin
@@ -76,6 +76,10 @@ FROM x IN L LET z BE 4 WHERE x > 1 SELECT x, z:
     ...    ).select('x', 'z')
     [(2, 4), (3, 4)]
 
+
+Expressions in the result
+-------------------------
+
 FROM x IN L LET z BE 4 WHERE x > 1 SELECT x, z, x * z:
 
     >>> Kviri('x').in_(L
@@ -88,7 +92,7 @@ FROM x IN L LET z BE 4 WHERE x > 1 SELECT x, z, (x, z):
 
     >>> Kviri('x').in_(L
     ...    ).let('z').be(4
-    ...    ).where(lambda **names: names['x'] > 1
+    ...    ).where(lambda x, **rest: x > 1
     ...    ).select('x', 'z', lambda x, z, **rest: (x, z))
     [(2, 4, (2, 4)), (3, 4, (3, 4))]
 

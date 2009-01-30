@@ -13,8 +13,8 @@ Kviri -- LINQ for objects in Python
 import pprint
 
 class Kviri(object):
-    ASC=False
-    DESC=True
+    ASC = False
+    DESC = True
 
     def __init__(self, name=None):
         """

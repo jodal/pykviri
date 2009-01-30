@@ -185,8 +185,6 @@ class Kviri(object):
                 reverse = False
                 if ordering.lower().endswith(' asc'):
                     ordering = ordering[:-len(' asc')]
-                else:
-                    ordering = ordering
             self._bindings.sort(key=lambda b: eval(ordering, b.copy()),
                 reverse=reverse)
         return self

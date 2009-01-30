@@ -62,12 +62,12 @@ class Kviri(object):
         assert name is not None
         return name
 
-    def fromName(self, name):
+    def _set_name(self, name):
         """
         >>> k = Kviri()
         >>> k._unused_name == None
         True
-        >>> k.fromName('x')
+        >>> k._set_name('x')
         []
         >>> k._unused_name == 'x'
         True
@@ -76,7 +76,7 @@ class Kviri(object):
         >>> k._unused_name == 'x'
         True
         >>> try:
-        ...     k.fromName('x')
+        ...     k._set_name('x')
         ... except AssertionError:
         ...     print 'OK'
         OK
@@ -87,6 +87,8 @@ class Kviri(object):
         assert self._unused_name is None
         self._unused_name = name
         return self
+
+    fromName = _set_name
 
     def inSource(self, source):
         """
@@ -105,9 +107,7 @@ class Kviri(object):
         self.bindings = new_bindings
         return self
 
-    def let(self, name):
-        self._set_name(name)
-        return self
+    let = _set_name
 
     def be(self, value):
         name = self._get_name()

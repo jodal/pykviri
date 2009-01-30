@@ -170,6 +170,15 @@ class Kviri(object):
         [('Bob',), ('Fred',), ('George',), ('Mary',)]
         """
 
+        def _get_key(binding):
+            components = name.split('.', 1)
+            key = components.pop(0)
+            try:
+                rest = components.pop(0)
+                return eval('binding[key].%s' % rest)
+            except IndexError:
+                return binding[key]
+
         orderings = reversed(orderings) # Sort by the last ordering first
         for ordering in orderings:
             if ordering.lower().endswith(' desc'):
@@ -181,7 +190,7 @@ class Kviri(object):
                     name = ordering[:-len(' asc')]
                 else:
                     name = ordering
-            self._bindings.sort(key=lambda b: b[name], reverse=reverse)
+            self._bindings.sort(key=_get_key, reverse=reverse)
         return self
 
     def select(self, *selectors):

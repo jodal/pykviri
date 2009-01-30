@@ -99,8 +99,8 @@ class Kviri(object):
 
         name = self._get_name()
         new_bindings = []
-        for old_binding in self.bindings:
-            for value in source:
+        for value in source:
+            for old_binding in self.bindings:
                 new_binding = old_binding.copy()
                 new_binding.update({name: value})
                 new_bindings.append(new_binding)

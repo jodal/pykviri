@@ -193,6 +193,23 @@ class Kviri(object):
             self._results.append(tuple(result))
         return self
 
+    def distinct(self):
+        """
+        >>> k = Kviri('x').in_(range(3)
+        ...     ).from_('y').in_(range(7, 9))
+        >>> print k.select('x')
+        [(0,), (1,), (2,), (0,), (1,), (2,)]
+        >>> print k.select('x').distinct()
+        [(0,), (1,), (2,)]
+        """
+
+        distinct_results = []
+        for result in self._results:
+            if result not in distinct_results:
+                distinct_results.append(result)
+        self._results = distinct_results
+        return self
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()

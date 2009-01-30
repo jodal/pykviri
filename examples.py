@@ -79,7 +79,7 @@ FROM x IN L ORDER BY x DESC SELECT x:
 ...    ).select('x')
 [(3,), (2,), (1,)]
 
-FROM x IN L FROM y in M ORDER BY x DESC, y DESC SELECT x, y:
+FROM x IN L FROM y IN M ORDER BY x DESC, y DESC SELECT x, y:
 
 >>> print Kviri('x').in_(L
 ...    ).from_('y').in_(M
@@ -87,7 +87,7 @@ FROM x IN L FROM y in M ORDER BY x DESC, y DESC SELECT x, y:
 ...    ).select('x', 'y')
 [(3, 9), (3, 8), (3, 7), (2, 9), (2, 8), (2, 7), (1, 9), (1, 8), (1, 7)]
 
-FROM x IN L FROM y in M ORDER BY x DESC, y ASC SELECT x, y:
+FROM x IN L FROM y IN M ORDER BY x DESC, y ASC SELECT x, y:
 
 >>> print Kviri('x').in_(L
 ...    ).from_('y').in_(M
@@ -95,13 +95,21 @@ FROM x IN L FROM y in M ORDER BY x DESC, y ASC SELECT x, y:
 ...    ).select('x', 'y')
 [(3, 7), (3, 8), (3, 9), (2, 7), (2, 8), (2, 9), (1, 7), (1, 8), (1, 9)]
 
-FROM x IN L FROM y in M ORDER BY x ASC, y DESC SELECT x, y
+FROM x IN L FROM y IN M ORDER BY x ASC, y DESC SELECT x, y:
 
 >>> print Kviri('x').in_(L
 ...    ).from_('y').in_(M
 ...    ).order_by(('x', Kviri.ASC), ('y', Kviri.DESC)
 ...    ).select('x', 'y')
 [(1, 9), (1, 8), (1, 7), (2, 9), (2, 8), (2, 7), (3, 9), (3, 8), (3, 7)]
+
+FROM x IN L FROM y IN M SELECT x DISTINCT:
+
+>>> print Kviri('x').in_(L
+...     ).from_('y').in_(M
+...     ).select('x'
+...     ).distinct()
+[(1,), (2,), (3,)]
 
 """
 

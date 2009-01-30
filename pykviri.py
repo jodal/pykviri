@@ -38,6 +38,12 @@ class Kviri(object):
         self._results = []
         self.from_(name)
 
+    def __iter__(self):
+        if self._results:
+            return self._results.__iter__()
+        else:
+            return self._bindings.__iter__()
+
     def __repr__(self):
         return pprint.saferepr(self._results or self._bindings)
 

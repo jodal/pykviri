@@ -228,6 +228,27 @@ strings:
     ...              p.name, p.age, q.name))
     [('George is 19, and so is Fred',), ('Fred is 19, and so is George',)]
 
+
+Iterating over the results
+--------------------------
+
+You can iterate over your Kviri query, just as if it was a list (though, this
+example is rather stupid):
+
+    >>> for i in Kviri('x').in_(L).select('x'):
+    ...     print i
+    (1,)
+    (2,)
+    (3,)
+
+A query without a select() clause returns the bindings instead:
+
+    >>> for i in Kviri('x').in_(L):
+    ...     print i
+    {'x': 1}
+    {'x': 2}
+    {'x': 3}
+
 """
 
 if __name__ == '__main__':

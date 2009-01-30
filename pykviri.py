@@ -125,8 +125,7 @@ class Kviri(object):
 
     def in_(self, source):
         """
-        >>> k = Kviri('x').in_(range(3))
-        >>> print k.select('x')
+        >>> Kviri('x').in_(range(3)).select('x')
         [(0,), (1,), (2,)]
         """
 
@@ -141,8 +140,7 @@ class Kviri(object):
 
     def be(self, value):
         """
-        >>> k = Kviri('x').in_(range(2)).let('y').be(4)
-        >>> print k.select('x', 'y')
+        >>> Kviri('x').in_(range(2)).let('y').be(4).select('x', 'y')
         [(0, 4), (1, 4)]
         """
 
@@ -158,13 +156,13 @@ class Kviri(object):
     def order_by(self, *orderings):
         """
         >>> k = Kviri('x').in_(range(3))
-        >>> print k.order_by('x').select('x')
+        >>> k.order_by('x').select('x')
         [(0,), (1,), (2,)]
-        >>> print k.order_by(('x DESC')).select('x')
+        >>> k.order_by(('x DESC')).select('x')
         [(2,), (1,), (0,)]
 
         >>> k2 = k.from_('y').in_(range(7, 9))
-        >>> print k2.order_by('y AsC', 'x aSc').select('x', 'y')
+        >>> k2.order_by('y AsC', 'x aSc').select('x', 'y')
         [(0, 7), (1, 7), (2, 7), (0, 8), (1, 8), (2, 8)]
 
         >>> Kviri('name').in_(('George', 'Fred', 'Mary', 'Bob')
@@ -190,14 +188,16 @@ class Kviri(object):
         """
         >>> k = Kviri('x').in_(range(3)
         ...     ).from_('y').in_(range(7, 9))
-        >>> print k.select('x')
+        >>> k.select('x')
         [(0,), (1,), (2,), (0,), (1,), (2,)]
 
-        >>> print k.select('y')
+        >>> k.select('y')
         [(7,), (7,), (7,), (8,), (8,), (8,)]
 
-        >>> print k.select('x', 'y')
+        >>> k.select('x', 'y')
         [(0, 7), (1, 7), (2, 7), (0, 8), (1, 8), (2, 8)]
+
+        Using print makes the output more readable.
 
         >>> print k.select('x', 'y',
         ...     lambda x, y, **rest: x + y,
@@ -233,10 +233,9 @@ class Kviri(object):
         """
         >>> k = Kviri('x').in_(range(3)
         ...     ).from_('y').in_(range(7, 9))
-        >>> print k.select('x')
+        >>> k.select('x')
         [(0,), (1,), (2,), (0,), (1,), (2,)]
-
-        >>> print k.select('x').distinct()
+        >>> k.select('x').distinct()
         [(0,), (1,), (2,)]
         """
 

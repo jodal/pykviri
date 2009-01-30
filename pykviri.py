@@ -3,11 +3,12 @@
 """
 Kviri -- LINQ for objects in Python
 
->>> print Kviri('x').in_(range(10)
-...     ).where('x > 3 and x % 2 == 0'
+>>> Kviri('x').in_(range(10)
+...     ).from_('y').in_(range(10)
+...     ).where('x > 3 and (x + y) % 10 == 0'
 ...     ).order_by(('x', Kviri.DESC)
-...     ).select('x')
-[(8,), (6,), (4,)]
+...     ).select('x', 'y')
+[(9, 1), (8, 2), (7, 3), (6, 4), (5, 5), (4, 6)]
 """
 
 import pprint
@@ -106,14 +107,11 @@ class Kviri(object):
 
     def _filter(self, filter):
         """
-        >>> k = Kviri('x').in_(range(10)).where(
-        ...    lambda x, **rest: x % 2 == 0)
-        >>> print k.select('x')
-        [(0,), (2,), (4,), (6,), (8,)]
+        >>> Kviri('x').in_(range(10))._filter(lambda x, **rest: x % 2 == 0)
+        [{'x': 0}, {'x': 2}, {'x': 4}, {'x': 6}, {'x': 8}]
 
-        >>> k = Kviri('x').in_(range(10)).where('x % 2 == 0')
-        >>> print k.select('x')
-        [(0,), (2,), (4,), (6,), (8,)]
+        >>> Kviri('x').in_(range(10))._filter('x % 2 == 0')
+        [{'x': 0}, {'x': 2}, {'x': 4}, {'x': 6}, {'x': 8}]
         """
 
         new_bindings = []
@@ -121,8 +119,8 @@ class Kviri(object):
             if callable(filter):
                 if filter(**binding):
                     new_bindings.append(binding)
-            elif eval(filter, binding):
-                new_bindings.append(binding)
+            elif eval(filter, binding.copy()):
+                    new_bindings.append(binding)
         self._bindings = new_bindings
         return self
 
@@ -222,7 +220,7 @@ class Kviri(object):
                 if callable(selector):
                     result.append(selector(**binding))
                 else:
-                    result.append(eval(selector, binding))
+                    result.append(eval(selector, binding.copy()))
             self._results.append(tuple(result))
         return self
 

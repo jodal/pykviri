@@ -4,7 +4,7 @@
 Kviri -- LINQ for objects in Python
 
 >>> print Kviri('x').in_(range(10)
-...     ).where(lambda **n: n['x'] > 3 and n['x'] % 2 == 0
+...     ).where('x > 3 and x % 2 == 0'
 ...     ).order_by(('x', Kviri.DESC)
 ...     ).select('x')
 [(8,), (6,), (4,)]
@@ -107,7 +107,7 @@ class Kviri(object):
     def _filter(self, filter):
         """
         >>> k = Kviri('x').in_(range(10)).where(
-        ...    lambda **n: n['x'] % 2 == 0)
+        ...    lambda x, **rest: x % 2 == 0)
         >>> print k.select('x')
         [(0,), (2,), (4,), (6,), (8,)]
 
@@ -197,8 +197,8 @@ class Kviri(object):
         [(0, 7), (1, 7), (2, 7), (0, 8), (1, 8), (2, 8)]
 
         >>> print k.select('x', 'y',
-        ...     lambda x, y, **n: x + y,
-        ...     lambda **n: n['x'] * n['y'])
+        ...     lambda x, y, **rest: x + y,
+        ...     lambda **rest: rest['x'] * rest['y'])
         [(0, 7, 7, 0),
          (1, 7, 8, 7),
          (2, 7, 9, 14),

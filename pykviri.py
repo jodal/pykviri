@@ -3,9 +3,9 @@
 """
 Kviri -- LINQ for objects in Python
 
->>> print Kviri('x').inSource(range(10)
+>>> print Kviri('x').in_(range(10)
 ...     ).where(lambda **n: n['x'] > 3 and n['x'] % 2 == 0
-...     ).orderBy(('x', Kviri.DESC)
+...     ).order_by(('x', Kviri.DESC)
 ...     ).select('x')
 [{'x': 8}, {'x': 6}, {'x': 4}]
 """
@@ -38,7 +38,7 @@ class Kviri(object):
         self._unused_name = None
         self._bindings = [{}]
         self._results = []
-        self.fromName(name)
+        self.from_(name)
 
     def __repr__(self):
         return pprint.saferepr(self._results)
@@ -88,11 +88,11 @@ class Kviri(object):
         self._unused_name = name
         return self
 
-    fromName = _set_name
+    from_ = _set_name
 
-    def inSource(self, source):
+    def in_(self, source):
         """
-        >>> k = Kviri('x').inSource(range(3))
+        >>> k = Kviri('x').in_(range(3))
         >>> print k.select('x')
         [{'x': 0}, {'x': 1}, {'x': 2}]
         """
@@ -111,7 +111,7 @@ class Kviri(object):
 
     def be(self, value):
         """
-        >>> k = Kviri('x').inSource(range(2)).let('y').be(4)
+        >>> k = Kviri('x').in_(range(2)).let('y').be(4)
         >>> print k.select('x', 'y')
         [{'x': 0, 'y': 4}, {'x': 1, 'y': 4}]
         """
@@ -127,7 +127,7 @@ class Kviri(object):
 
     def where(self, func):
         """
-        >>> k = Kviri('x').inSource(range(10)).where(
+        >>> k = Kviri('x').in_(range(10)).where(
         ...    lambda **n: n['x'] % 2 == 0)
         >>> print k.select('x')
         [{'x': 0}, {'x': 2}, {'x': 4}, {'x': 6}, {'x': 8}]
@@ -140,15 +140,15 @@ class Kviri(object):
         self._bindings = new_bindings
         return self
 
-    def orderBy(self, *orderings):
+    def order_by(self, *orderings):
         """
-        >>> k = Kviri('x').inSource(range(3))
-        >>> print k.orderBy(('x', Kviri.DESC)).select('x')
+        >>> k = Kviri('x').in_(range(3))
+        >>> print k.order_by(('x', Kviri.DESC)).select('x')
         [{'x': 2}, {'x': 1}, {'x': 0}]
-        >>> print k.orderBy(('x', Kviri.ASC)).select('x')
+        >>> print k.order_by(('x', Kviri.ASC)).select('x')
         [{'x': 0}, {'x': 1}, {'x': 2}]
-        >>> k2 = k.fromName('y').inSource(range(7, 9))
-        >>> print k2.orderBy(('y', Kviri.ASC), ('x', Kviri.ASC)
+        >>> k2 = k.from_('y').in_(range(7, 9))
+        >>> print k2.order_by(('y', Kviri.ASC), ('x', Kviri.ASC)
         ...     ).select('x', 'y')
         [{'x': 0, 'y': 7},
          {'x': 1, 'y': 7},
@@ -156,8 +156,8 @@ class Kviri(object):
          {'x': 0, 'y': 8},
          {'x': 1, 'y': 8},
          {'x': 2, 'y': 8}]
-        >>> k3 = Kviri('n').inSource(('George', 'Fred', 'Mary', 'Bob'))
-        >>> print k3.orderBy(('n', Kviri.ASC)).select('n')
+        >>> k3 = Kviri('n').in_(('George', 'Fred', 'Mary', 'Bob'))
+        >>> print k3.order_by(('n', Kviri.ASC)).select('n')
         [{'n': 'Bob'}, {'n': 'Fred'}, {'n': 'George'}, {'n': 'Mary'}]
         """
 
@@ -168,8 +168,8 @@ class Kviri(object):
 
     def select(self, *selectors):
         """
-        >>> k = Kviri('x').inSource(range(3)
-        ...     ).fromName('y').inSource(range(7, 9))
+        >>> k = Kviri('x').in_(range(3)
+        ...     ).from_('y').in_(range(7, 9))
         >>> print k.select('x')
         [{'x': 0}, {'x': 1}, {'x': 2}, {'x': 0}, {'x': 1}, {'x': 2}]
         >>> print k.select('y')

@@ -208,6 +208,26 @@ Join people by age, but not with themselves:
     ...     ).select('p', 'q')
     [(Person(George), Person(Fred)), (Person(Fred), Person(George))]
 
+
+Building strings of the result
+------------------------------
+
+We can produce some more readable output directly:
+
+    >>> Kviri('p').in_(persons
+    ...     ).join('q').in_(persons).on('p.age == q.age and p is not q'
+    ...     ).select('"%s is %d, and so is %s" % (p.name, p.age, q.name)')
+    [('George is 19, and so is Fred',), ('Fred is 19, and so is George',)]
+
+When we get to this complexity, lambdas may be preferable over evaluated
+strings:
+
+    >>> Kviri('p').in_(persons
+    ...     ).join('q').in_(persons).on('p.age == q.age and p is not q'
+    ...     ).select(lambda p, q: "%s is %d, and so is %s" % (
+    ...              p.name, p.age, q.name))
+    [('George is 19, and so is Fred',), ('Fred is 19, and so is George',)]
+
 """
 
 if __name__ == '__main__':

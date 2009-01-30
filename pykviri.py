@@ -147,9 +147,18 @@ class Kviri(object):
         [{'x': 2}, {'x': 1}, {'x': 0}]
         >>> print k.orderBy(('x', Kviri.ASC)).select('x')
         [{'x': 0}, {'x': 1}, {'x': 2}]
+        >>> k = k.fromName('y').inSource(range(7, 9))
+        >>> print k.orderBy(('y', Kviri.ASC), ('x', Kviri.ASC)).select('x', 'y')
+        [{'x': 0, 'y': 7},
+         {'x': 1, 'y': 7},
+         {'x': 2, 'y': 7},
+         {'x': 0, 'y': 8},
+         {'x': 1, 'y': 8},
+         {'x': 2, 'y': 8}]
         """
 
-        for (order_key, reverse) in reversed(orderings):
+        orderings = reversed(orderings) # Sort by the last ordering first
+        for (order_key, reverse) in orderings:
             self._bindings.sort(key=lambda b: b[order_key], reverse=reverse)
         return self
 

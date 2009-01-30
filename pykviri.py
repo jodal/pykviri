@@ -160,10 +160,12 @@ class Kviri(object):
         [(2,), (1,), (0,)]
         >>> print k.order_by(('x', Kviri.ASC)).select('x')
         [(0,), (1,), (2,)]
+
         >>> k2 = k.from_('y').in_(range(7, 9))
         >>> print k2.order_by(('y', Kviri.ASC), ('x', Kviri.ASC)
         ...     ).select('x', 'y')
         [(0, 7), (1, 7), (2, 7), (0, 8), (1, 8), (2, 8)]
+
         >>> k3 = Kviri('name').in_(('George', 'Fred', 'Mary', 'Bob'))
         >>> print k3.order_by(('name', Kviri.ASC)).select('name')
         [('Bob',), ('Fred',), ('George',), ('Mary',)]
@@ -180,10 +182,13 @@ class Kviri(object):
         ...     ).from_('y').in_(range(7, 9))
         >>> print k.select('x')
         [(0,), (1,), (2,), (0,), (1,), (2,)]
+
         >>> print k.select('y')
         [(7,), (7,), (7,), (8,), (8,), (8,)]
+
         >>> print k.select('x', 'y')
         [(0, 7), (1, 7), (2, 7), (0, 8), (1, 8), (2, 8)]
+
         >>> print k.select('x', 'y',
         ...     lambda **n: n['x'] + n['y'],
         ...     lambda **n: n['x'] * n['y'])
@@ -212,6 +217,7 @@ class Kviri(object):
         ...     ).from_('y').in_(range(7, 9))
         >>> print k.select('x')
         [(0,), (1,), (2,), (0,), (1,), (2,)]
+
         >>> print k.select('x').distinct()
         [(0,), (1,), (2,)]
         """

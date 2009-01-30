@@ -147,14 +147,18 @@ class Kviri(object):
         [{'x': 2}, {'x': 1}, {'x': 0}]
         >>> print k.orderBy(('x', Kviri.ASC)).select('x')
         [{'x': 0}, {'x': 1}, {'x': 2}]
-        >>> k = k.fromName('y').inSource(range(7, 9))
-        >>> print k.orderBy(('y', Kviri.ASC), ('x', Kviri.ASC)).select('x', 'y')
+        >>> k2 = k.fromName('y').inSource(range(7, 9))
+        >>> print k2.orderBy(('y', Kviri.ASC), ('x', Kviri.ASC)
+        ...     ).select('x', 'y')
         [{'x': 0, 'y': 7},
          {'x': 1, 'y': 7},
          {'x': 2, 'y': 7},
          {'x': 0, 'y': 8},
          {'x': 1, 'y': 8},
          {'x': 2, 'y': 8}]
+        >>> k3 = Kviri('n').inSource(('George', 'Fred', 'Mary', 'Bob'))
+        >>> print k3.orderBy(('n', Kviri.ASC)).select('n')
+        [{'n': 'Bob'}, {'n': 'Fred'}, {'n': 'George'}, {'n': 'Mary'}]
         """
 
         orderings = reversed(orderings) # Sort by the last ordering first

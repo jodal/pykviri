@@ -14,6 +14,8 @@ Kviri -- LINQ for objects in Python
 import pprint
 
 class Kviri(object):
+    """Kviri query constructor class"""
+
     def __init__(self, name=None):
         """
         >>> k = Kviri('x')
@@ -34,6 +36,7 @@ class Kviri(object):
         """
 
         self._unused_name = None
+        self._unused_selectors = None
         self._bindings = [{}]
         self._results = None
         self.from_(name)
@@ -120,7 +123,7 @@ class Kviri(object):
         """
 
         result = []
-        for i, selector in enumerate(selectors):
+        for selector in selectors:
             result.append(self._get_evaluation(selector, binding))
         return tuple(result)
 
@@ -144,7 +147,7 @@ class Kviri(object):
             return eval(code, binding.copy())
 
 
-    def _filter(self, filter):
+    def _filter(self, rule):
         """
         >>> Kviri('x').in_(range(10))._filter(lambda x, **rest: x % 2 == 0)
         [{'x': 0}, {'x': 2}, {'x': 4}, {'x': 6}, {'x': 8}]
@@ -155,7 +158,7 @@ class Kviri(object):
 
         new_bindings = []
         for binding in self._bindings:
-            if self._get_evaluation(filter, binding):
+            if self._get_evaluation(rule, binding):
                 new_bindings.append(binding)
         self._bindings = new_bindings
         return self

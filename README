@@ -1,0 +1,27 @@
+About
+=====
+
+PyKviri is query API for Python collections.
+
+The inspiration of PyKviri is LINQ, and especially the blog post "A Model for
+Query Interpretation" at [1].
+
+[1] http://blogs.msdn.com/wesdyer/archive/2006/12/26/a-model-for-query-interpretation.aspx
+
+
+Usage
+=====
+
+You can find lots of query examples with explanations in the file
+"examples.py". The file doubles as both documentation and executable doctests
+for the API.
+
+The entire library source can be found in the file "pykviri.py".
+
+For easier installation, a distutils "setup.py" script is also included.
+
+
+Contributors
+============
+
+* Stein Magnus Jodal <stein.magnus@jodal.no>
